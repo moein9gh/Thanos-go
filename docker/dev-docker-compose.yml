@@ -1,0 +1,47 @@
+version: '3.1'
+services:
+  thanos:
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    image: thanos
+    container_name: thanos
+    networks:
+      - thanos
+    restart: always
+    entrypoint: ["/bin/thanos", "serve","--migrate"]
+    ports:
+      - "8000:8080"
+      - "8100:8099"
+    volumes:
+      - ./storage/statics:/app/statics
+      - ./logs/:/logs/
+    depends_on:
+      - "mariadb"
+
+  mariadb:
+    image: mariadb:10.4.13
+    volumes:
+      - maria-storage:/var/lib/mysql
+    restart: always
+    hostname: mariadb
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+    networks:
+      - thanos
+    environment:
+      MYSQL_USER: maria
+      MYSQL_PASSWORD: VhZHNhM2RhZGRzYWRhc
+      MYSQL_DATABASE: thanos
+      MYSQL_ROOT_PASSWORD: root
+    command: mysqld --lower_case_table_names=1 --skip-ssl
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --explicit_defaults_for_timestamp
+
+volumes:
+  maria-storage:
+
+networks:
+  thanos:
