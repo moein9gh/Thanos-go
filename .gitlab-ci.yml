@@ -1,0 +1,66 @@
+variables:
+  DOCKER_DRIVER:
+  DOCKER_HOST:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_REGISTRY_IMAGE_DEV:
+  DOCKER_REGISTRY_IMAGE_STAGING:
+  DOCKER_REGISTRY_IMAGE_PROD:
+  STAGING_IP:
+  PROD_IP:
+  GIT_STRATEGY: clone
+
+stages:
+  - push-staging
+  - push-prod
+  - deploy-staging
+  - deploy-prod
+
+#Pushes
+
+push-staging:
+  stage: push-staging
+  tags:
+    -
+  image:
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY_URL
+  script:
+    - docker build -t $DOCKER_REGISTRY_IMAGE_STAGING .
+    - docker push $DOCKER_REGISTRY_IMAGE_STAGING
+  only:
+    - staging
+
+push-prod:
+  stage: push-prod
+  tags:
+    -
+  image:
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY_URL
+  script:
+    - docker build -t $DOCKER_REGISTRY_IMAGE_PROD .
+    - docker push $DOCKER_REGISTRY_IMAGE_PROD
+  only:
+    - main
+  when: manual
+
+deploy-staging:
+  stage: deploy-staging
+  tags:
+    -
+  image:
+  script:
+    - ssh -o StrictHostKeyChecking=no -t root@$STAGING_IP "docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY_URL && /opt/docker/deploy.sh $CI_PROJECT_NAME"
+  only:
+    - staging
+
+deploy-prod:
+  stage: deploy-prod
+  tags:
+    -
+  image:
+  script:
+    - ssh -o StrictHostKeyChecking=no -t root@$PROD_IP "docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY_URL && /opt/docker/deploy.sh $CI_PROJECT_NAME"
+  only:
+    - main
+  when: manual
