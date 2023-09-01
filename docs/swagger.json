@@ -1,0 +1,189 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is Thanos api docs.",
+        "title": "Thanos",
+        "contact": {
+            "name": "API Support"
+        },
+        "license": {
+            "name": "Apache 2.0"
+        },
+        "version": "1.0"
+    },
+    "host": "185.255.88.17:8095",
+    "basePath": "/v1",
+    "paths": {
+        "/accounts": {
+            "post": {
+                "description": "Create Account",
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Create Account",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "{\"device_id\":\"string\",\"session_id\":\"string\",\"platform\":\"int\",\"app_version\":\"string\"}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/param.AddAccountResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "$ref": "#/definitions/param.BadRequestHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/param.UnAuthorizedHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/param.UnprocessableEntity"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/param.InternalError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "param.AccountTokens": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "param.AddAccountResponse": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "type": "integer"
+                },
+                "tokens": {
+                    "$ref": "#/definitions/param.AccountTokens"
+                }
+            }
+        },
+        "param.BadRequestHttpError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "code=400, message=bad request"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "status bad request"
+                }
+            }
+        },
+        "param.ImageUnit": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "param.InternalError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "code=500, message=internal server error"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "nil pointer"
+                }
+            }
+        },
+        "param.NotFound": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "code=404, message=not found"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "requested object not found"
+                }
+            }
+        },
+        "param.RefreshTokensResponse": {
+            "type": "object",
+            "properties": {
+                "tokens": {
+                    "$ref": "#/definitions/param.AccountTokens"
+                }
+            }
+        },
+        "param.UnAuthorizedHttpError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "code=401, message=invalid or expired jwt"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "unauthorized"
+                }
+            }
+        },
+        "param.UnprocessableEntity": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "code=422, message=Unprocessable Entity"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "request parameters are not valid"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "authorization",
+            "in": "header"
+        }
+    }
+}

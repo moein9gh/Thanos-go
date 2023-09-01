@@ -1,0 +1,134 @@
+basePath: /v1
+definitions:
+  param.AccountTokens:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  param.AddAccountResponse:
+    properties:
+      account_id:
+        type: integer
+      tokens:
+        $ref: '#/definitions/param.AccountTokens'
+    type: object
+  param.BadRequestHttpError:
+    properties:
+      error:
+        example: code=400, message=bad request
+        type: string
+      message:
+        example: status bad request
+        type: string
+    type: object
+  param.ImageUnit:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  param.InternalError:
+    properties:
+      error:
+        example: code=500, message=internal server error
+        type: string
+      message:
+        example: nil pointer
+        type: string
+    type: object
+  param.NotFound:
+    properties:
+      error:
+        example: code=404, message=not found
+        type: string
+      message:
+        example: requested object not found
+        type: string
+    type: object
+  param.UnAuthorizedHttpError:
+    properties:
+      error:
+        example: code=401, message=invalid or expired jwt
+        type: string
+      message:
+        example: unauthorized
+        type: string
+    type: object
+  param.UnprocessableEntity:
+    properties:
+      error:
+        example: code=422, message=Unprocessable Entity
+        type: string
+      message:
+        example: request parameters are not valid
+        type: string
+    type: object
+host: 127.0.0.1:8000
+info:
+  contact:
+    name: API Support
+  description: This is Thanos api docs.
+  license:
+    name: Apache 2.0
+  title: Thanos
+  version: "1.0"
+paths:
+  /accounts:
+    post:
+      description: Create Account
+      parameters:
+      - description: request body
+        in: body
+        name: email
+        required: true
+        schema:
+          example: '{"device_id":"string","session_id":"string","platform":"int","app_version":"string"}'
+          type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/param.AddAccountResponse'
+            type: array
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/param.BadRequestHttpError'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/param.UnAuthorizedHttpError'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/param.UnprocessableEntity'
+        "500":
+          description: internal server error
+          schema:
+            $ref: '#/definitions/param.InternalError'
+      summary: Create Account
+      tags:
+      - Account
+  /health-check:
+    get:
+      description: Health check
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/param.BadRequestHttpError'
+      summary: Health check
+      tags:
+      - Health check
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: authorization
+    type: apiKey
+swagger: "2.0"
