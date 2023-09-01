@@ -1,0 +1,18 @@
+//vendoring
+    go mod tidy 
+    go mod vendor
+
+//starting 
+    go run main.go 
+
+//building 
+    go build . 
+
+//testing
+    go test .
+
+//initializing go.mod
+    go mod init
+
+//building
+    make build
